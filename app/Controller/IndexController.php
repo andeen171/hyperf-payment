@@ -12,16 +12,19 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+use Swoole\Http\Status;
+
 class IndexController extends AbstractController
 {
-    public function index()
+    public function index(): ResponseInterface
     {
         $user = $this->request->input('user', 'Hyperf');
         $method = $this->request->getMethod();
 
-        return [
+        return $this->response->json([
             'method' => $method,
-            'message' => "Hello {$user}.",
-        ];
+            'message' => "Hello $user.",
+        ])->withStatus(Status::OK);
     }
 }

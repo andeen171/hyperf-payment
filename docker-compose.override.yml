@@ -1,0 +1,5 @@
+version: '3'
+services:
+  php:
+    container_name: php
+    entrypoint: php bin/hyperf.php server:watch

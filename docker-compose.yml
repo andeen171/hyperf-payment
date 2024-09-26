@@ -7,10 +7,28 @@ services:
     volumes:
       - ./:/opt/www
     ports:
-      - 9501:9501
+      - "9501:9501"
     environment:
       - APP_ENV=dev
       - SCAN_CACHEABLE=false
+
+  database:
+    container_name: database
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: hyperf
+      MYSQL_USER: hyperf
+      MYSQL_PASSWORD: hyperf
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  mysql_data:
+    driver: local
 
 networks:
   default:
