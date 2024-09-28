@@ -28,4 +28,17 @@ class SignUpRequest extends FormRequest
             'passwordConfirmation' => 'required|string|same:password',
         ];
     }
+
+    public function prepareForValidation(): void
+    {
+        $validator = $this->getValidatorInstance();
+
+        $validator->sometimes('document', 'cpf', function ($input) {
+            return !$this->input('type') || $this->input('type') === UserTypeEnum::COMMON->value;
+        });
+
+        $validator->sometimes('document', 'cnpj', function ($input) {
+            return $this->input('type') === UserTypeEnum::SHOPKEEPER->value;
+        });
+    }
 }
