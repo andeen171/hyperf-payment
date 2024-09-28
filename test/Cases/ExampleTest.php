@@ -22,6 +22,7 @@ class ExampleTest extends TestCase
 {
     public function testExample()
     {
-        $this->get('/')->assertOk()->assertSee('Hyperf');
+        $response = $this->get('/');
+        $response->assertOk()->assertSee('Hyperf');
     }
 }
