@@ -17,6 +17,10 @@ class AbstractException extends ServerException
 
     public function getData(): array
     {
-        return $this->data;
+        return [
+            'code' => $this->getCode(),
+            'message' => $this->getMessage(),
+            'data' => $this->data,
+        ];
     }
 }
