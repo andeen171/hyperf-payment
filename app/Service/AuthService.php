@@ -7,6 +7,7 @@ use App\Exception\Auth\UserNotFoundException;
 use App\Exception\Auth\WrongCredentialsException;
 use App\Model\User;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Hyperf\Context\Context;
 use Throwable;
 use function Hyperf\Config\config;
@@ -59,7 +60,7 @@ class AuthService
     public function decodeToken(string $token): ?object
     {
         try {
-            return JWT::decode($token, $this->secretKey);
+            return JWT::decode($token, new Key($this->secretKey, 'HS256'));
         } catch (Throwable) {
             return null;
         }
