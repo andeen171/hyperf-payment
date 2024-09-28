@@ -27,7 +27,7 @@ class SignUpTest extends TestCase
     public function __construct($name = null)
     {
         parent::__construct($name);
-        $this->faker = Faker\Factory::create();
+        $this->faker = Faker\Factory::create('pt_BR');
     }
 
     public function testSignUp()
@@ -36,7 +36,7 @@ class SignUpTest extends TestCase
             'type' => UserTypeEnum::COMMON->value,
             'firstName' => $this->faker->firstName,
             'lastName' => $this->faker->lastName,
-            'document' => $this->faker->numerify('###########'),
+            'document' => $this->faker->cpf,
             'email' => $email = $this->faker->email,
             'password' => $password = $this->faker->password,
             'passwordConfirmation' => $password,
@@ -61,7 +61,7 @@ class SignUpTest extends TestCase
         $response->assertOk()->assertJsonStructure(['token']);
     }
 
-    public function testSignUpValidation()
+    public function testSignUpPasswordValidation()
     {
         $data = [
             'type' => UserTypeEnum::COMMON->value,
@@ -71,6 +71,48 @@ class SignUpTest extends TestCase
             'email' => $this->faker->email,
             'password' => $this->faker->password,
             'passwordConfirmation' => $this->faker->password, // Different passwords
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertStatus(422);
+    }
+
+    public function testSignUpDocumentValidation()
+    {
+        $data = [
+            'type' => UserTypeEnum::COMMON->value, // Should have a valid cpf as document
+            'firstName' => $this->faker->firstName,
+            'lastName' => $this->faker->lastName,
+            'document' => $this->faker->cnpj,
+            'email' => $this->faker->email,
+            'password' => $password = $this->faker->password,
+            'passwordConfirmation' => $password,
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertStatus(422);
+
+        $data = [
+            'type' => UserTypeEnum::SHOPKEEPER->value, // Should have a valid cnpj as document
+            'firstName' => $this->faker->firstName,
+            'lastName' => $this->faker->lastName,
+            'document' => $this->faker->cnpj,
+            'email' => $this->faker->email,
+            'password' => $password = $this->faker->password,
+            'passwordConfirmation' => $password,
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertCreated();
+
+        $data = [
+            'type' => UserTypeEnum::SHOPKEEPER->value, // Should have a valid cnpj as document
+            'firstName' => $this->faker->firstName,
+            'lastName' => $this->faker->lastName,
+            'document' => $this->faker->cpf,
+            'email' => $this->faker->email,
+            'password' => $password = $this->faker->password,
+            'passwordConfirmation' => $password,
         ];
 
         $response = $this->post(self::ROUTE, $data);
