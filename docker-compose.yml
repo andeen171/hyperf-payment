@@ -8,11 +8,12 @@ services:
     ports:
       - "9501:9501"
     environment:
-      - APP_ENV=dev
       - SCAN_CACHEABLE=false
+    depends_on:
+        - db
 
-  database:
-    container_name: database
+  db:
+    container_name: payment-db
     image: mysql:8.0
     ports:
       - "3306:3306"
@@ -24,6 +25,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
 
 volumes:
   mysql_data:

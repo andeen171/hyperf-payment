@@ -12,9 +12,11 @@ declare(strict_types=1);
 
 namespace HyperfTest;
 
+use Hyperf\Database\Schema\Schema;
+use Hyperf\DbConnection\Db;
 use Hyperf\Testing\Client;
 use PHPUnit\Framework\TestCase;
-
+use function Hyperf\Config\config;
 use function Hyperf\Support\make;
 
 /**
@@ -41,5 +43,23 @@ abstract class HttpTestCase extends TestCase
     public function __call($name, $arguments)
     {
         return $this->client->{$name}(...$arguments);
+    }
+
+    protected function tearDown(): void
+    {
+        Schema::disableForeignKeyConstraints();
+
+        $tableNameProperty = 'Tables_in_' . config('app_name') . '-testing';
+        foreach (Schema::getAllTables() as $table) {
+            $tableName = $table->$tableNameProperty;
+
+            if ($tableName == 'migrations') {
+                continue;
+            }
+
+            DB::table($tableName)->delete();
+        }
+
+        Schema::enableForeignKeyConstraints();
     }
 }
