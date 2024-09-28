@@ -12,8 +12,7 @@ use Carbon\Carbon;
  * @property string $last_name
  * @property string $email
  * @property string $document
- * @property string $password_hash
- * @property string $salt
+ * @property string $password
  * @property string $type
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -27,8 +26,7 @@ class User extends Model
         'last_name',
         'email',
         'document',
-        'password_hash',
-        'salt',
+        'password',
         'type'
     ];
 

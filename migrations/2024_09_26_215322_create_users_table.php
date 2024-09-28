@@ -1,11 +1,10 @@
 <?php
 
-use Hyperf\Database\Schema\Schema;
-use Hyperf\Database\Schema\Blueprint;
 use Hyperf\Database\Migrations\Migration;
+use Hyperf\Database\Schema\Blueprint;
+use Hyperf\Database\Schema\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -18,9 +17,8 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('document')->unique();
-            $table->string('password_hash');
-            $table->string('salt');
-            $table->enum('type', ['common', 'shopkeeper']);
+            $table->string('password');
+            $table->enum('type', ['common', 'shopkeeper'])->default('common');
         });
     }
 
