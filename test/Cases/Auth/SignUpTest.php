@@ -60,4 +60,20 @@ class SignUpTest extends TestCase
         ]);
         $response->assertOk()->assertJsonStructure(['token']);
     }
+
+    public function testSignUpValidation()
+    {
+        $data = [
+            'type' => UserTypeEnum::COMMON->value,
+            'firstName' => $this->faker->firstName,
+            'lastName' => $this->faker->lastName,
+            'document' => $this->faker->numerify('###########'),
+            'email' => $this->faker->email,
+            'password' => $this->faker->password,
+            'passwordConfirmation' => $this->faker->password, // Different passwords
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertStatus(422);
+    }
 }

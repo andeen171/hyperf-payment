@@ -17,11 +17,8 @@ class SignInRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstName' => 'required|string',
-            'lastName' => 'required|string',
             'email' => 'required|email',
             'password' => 'required|string',
-            'passwordConfirmation' => 'required|string|same:password',
         ];
     }
 
