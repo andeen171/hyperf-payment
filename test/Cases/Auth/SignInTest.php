@@ -13,9 +13,11 @@ declare(strict_types=1);
 namespace HyperfTest\Cases\Auth;
 
 
+use App\Enum\ExceptionMessageCodeEnum;
 use App\Model\User;
 use Faker;
 use Hyperf\Testing\TestCase;
+use Swoole\Http\Status;
 
 class SignInTest extends TestCase
 {
@@ -49,5 +51,34 @@ class SignInTest extends TestCase
 
         $response = $this->post(self::ROUTE, $data);
         $response->assertOk()->assertJsonStructure(['token']);
+
+        $loggedResponse = $this->get('/user',
+            headers: ['Authorization' => $response->json('token')]
+        );
+
+        $loggedResponse->assertOk()->assertJsonStructure([
+            'data' => [
+                'id',
+                'type',
+                'firstName',
+                'lastName',
+                'document',
+                'email',
+            ]
+        ]);
+    }
+
+    public function testWrongCredentials()
+    {
+        $data = [
+            'email' => $this->user->email,
+            'password' => $this->faker->password, // Wrong password
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertUnauthorized()->assertJson([
+            'code' => Status::UNAUTHORIZED,
+            'message' => ExceptionMessageCodeEnum::WRONG_CREDENTIALS->value,
+        ]);
     }
 }

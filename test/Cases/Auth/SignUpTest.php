@@ -20,6 +20,7 @@ use Hyperf\Testing\TestCase;
 class SignUpTest extends TestCase
 {
     protected const ROUTE = '/auth/sign-up';
+    protected const SIGN_IN_ROUTE = '/auth/sign-in';
 
     protected Faker\Generator $faker;
 
@@ -36,7 +37,7 @@ class SignUpTest extends TestCase
             'firstName' => $this->faker->firstName,
             'lastName' => $this->faker->lastName,
             'document' => $this->faker->numerify('###########'),
-            'email' => $this->faker->email,
+            'email' => $email = $this->faker->email,
             'password' => $password = $this->faker->password,
             'passwordConfirmation' => $password,
         ];
@@ -52,5 +53,11 @@ class SignUpTest extends TestCase
                 'email',
             ]
         ]);
+
+        $response = $this->post(self::SIGN_IN_ROUTE, [
+            'email' => $email,
+            'password' => $password,
+        ]);
+        $response->assertOk()->assertJsonStructure(['token']);
     }
 }
