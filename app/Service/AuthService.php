@@ -31,7 +31,7 @@ class AuthService
             'email' => $data['email'],
             'document' => $data['document'],
             'password' => password_hash($data['password'], PASSWORD_BCRYPT),
-        ]);
+        ])->load('wallet');
     }
 
     public function signIn(?User $user, array $data): string
@@ -45,7 +45,14 @@ class AuthService
 
     public function issueToken(User $user): string
     {
-        $payload = [
+        $payload = $this->getTokenData($user);
+
+        return JWT::encode($payload, $this->secretKey, 'HS256');
+    }
+
+    public function getTokenData(User $user): array
+    {
+        return [
             'iss' => config('app_url'),
             'aud' => config('app_url'),
             'iat' => time(),
@@ -53,8 +60,6 @@ class AuthService
             'exp' => time() + 3600,
             'sub' => $user->id,
         ];
-
-        return JWT::encode($payload, $this->secretKey, 'HS256');
     }
 
     public function decodeToken(string $token): ?object
@@ -77,7 +82,7 @@ class AuthService
             /** @var ?object $token */
             $token = Context::get(self::CONTEXT_KEY);
 
-            return User::findOrFail($token->sub);
+            return User::findOrFail($token->sub)->load('wallet');
         } catch (Throwable) {
             throw new UnauthorizedException();
         }

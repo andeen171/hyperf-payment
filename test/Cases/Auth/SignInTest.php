@@ -16,12 +16,13 @@ namespace HyperfTest\Cases\Auth;
 use App\Enum\ExceptionMessageCodeEnum;
 use App\Model\User;
 use Faker;
-use Hyperf\Testing\TestCase;
+use HyperfTest\HttpTestCase;
 use Swoole\Http\Status;
 
-class SignInTest extends TestCase
+class SignInTest extends HttpTestCase
 {
     protected const ROUTE = '/auth/sign-in';
+    protected const PROFILE_ROUTE = '/users/profile';
 
     protected Faker\Generator $faker;
     protected User $user;
@@ -52,11 +53,11 @@ class SignInTest extends TestCase
         $response = $this->post(self::ROUTE, $data);
         $response->assertOk()->assertJsonStructure(['token']);
 
-        $loggedResponse = $this->get('/user',
+        $profileResponse = $this->get(self::PROFILE_ROUTE,
             headers: ['Authorization' => $response->json('token')]
         );
 
-        $loggedResponse->assertOk()->assertJsonStructure([
+        $profileResponse->assertOk()->assertJsonStructure([
             'data' => [
                 'id',
                 'type',

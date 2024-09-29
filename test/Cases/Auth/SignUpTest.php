@@ -15,9 +15,9 @@ namespace HyperfTest\Cases\Auth;
 
 use App\Enum\UserTypeEnum;
 use Faker;
-use Hyperf\Testing\TestCase;
+use HyperfTest\HttpTestCase;
 
-class SignUpTest extends TestCase
+class SignUpTest extends HttpTestCase
 {
     protected const ROUTE = '/auth/sign-up';
     protected const SIGN_IN_ROUTE = '/auth/sign-in';
@@ -51,6 +51,9 @@ class SignUpTest extends TestCase
                 'lastName',
                 'document',
                 'email',
+                'wallet' => [
+                    'balance'
+                ]
             ]
         ]);
 
