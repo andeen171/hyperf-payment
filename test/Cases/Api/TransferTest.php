@@ -101,4 +101,28 @@ class TransferTest extends HttpTestCase
                 'message' => ExceptionMessageCodeEnum::INSUFFICIENT_FUNDS->value,
             ]);
     }
+
+    public function testTransferAsShopkeeper()
+    {
+        $this->payer->update([
+            'type' => UserTypeEnum::SHOPKEEPER->value,
+        ]);
+
+        $this->payer->wallet->update([
+            'balance' => $balance = $this->faker->randomNumber(5),
+        ]);
+
+        $data = [
+            'value' => intval($balance / 2),
+            'payer' => $this->payer->id,
+            'payee' => $this->payee->id,
+        ];
+
+        $response = $this->post(self::ROUTE, $data);
+        $response->assertForbidden()
+            ->assertJson([
+                'code' => Status::FORBIDDEN,
+                'message' => ExceptionMessageCodeEnum::SHOPKEEPER_CANNOT_TRANSFER->value,
+            ]);
+    }
 }

@@ -9,4 +9,5 @@ enum ExceptionMessageCodeEnum: string
     case UNAUTHORIZED = 'unauthorized';
     case INSUFFICIENT_FUNDS = 'insufficient_funds';
     case TRANSACTION_FAILED = 'transaction_failed';
+    case SHOPKEEPER_CANNOT_TRANSFER = 'shopkeeper_cannot_transfer';
 }

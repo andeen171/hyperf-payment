@@ -2,11 +2,12 @@
 
 namespace App\Service;
 
+use App\Enum\UserTypeEnum;
 use App\Exception\InsufficientFundsException;
+use App\Exception\ShopkeeperCannotTransferException;
 use App\Exception\TransactionFailedException;
-use App\Interface\AuthorizeTransferInterface;
-use App\Interface\NotificationInterface;
 use App\Model\Transaction;
+use App\Model\User;
 use App\Model\Wallet;
 use App\Service\Request\AuthorizeTransferService;
 use App\Service\Request\NotificationService;
@@ -37,12 +38,9 @@ class TransactionService
      */
     public function transfer(array $data): Transaction
     {
-        /** @var Wallet $payerWallet */
-        $payerWallet = Wallet::where('user_id', $data['payer'])->firstOrFail();
+        $payer = User::find($data['payer']);
 
-        if (($payerWallet->balance - $data['value']) < 0) {
-            throw new InsufficientFundsException();
-        }
+        $this->canMakeTransfer($payer, $data);
 
         $parallel = new Parallel();
         Db::beginTransaction();
@@ -51,7 +49,7 @@ class TransactionService
 
             /** @var Wallet $payeeWallet */
             $payeeWallet = Wallet::where('user_id', $data['payee'])->firstOrFail();
-            $transaction = $this->processTransaction($payerWallet, $payeeWallet, $data['value']);
+            $transaction = $this->processTransaction($payer->wallet, $payeeWallet, $data['value']);
 
             $parallel->wait();
         } catch (Throwable $e) {
@@ -63,6 +61,17 @@ class TransactionService
         go(fn() => $this->notifyTransactionSuccess($data));
 
         return $transaction;
+    }
+
+    private function canMakeTransfer(User $payer, array $data): void
+    {
+        if ($payer->type === UserTypeEnum::SHOPKEEPER->value) {
+            throw new ShopkeeperCannotTransferException();
+        }
+
+        if (($payer->wallet->balance - $data['value']) < 0) {
+            throw new InsufficientFundsException();
+        }
     }
 
     private function processTransaction(Wallet $payerWallet, Wallet $payeeWallet, int $value): Transaction
