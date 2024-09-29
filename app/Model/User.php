@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Carbon\Carbon;
+use Hyperf\Database\Model\Relations\HasMany;
+use Hyperf\Database\Model\Relations\HasOne;
 
 /**
  * @property int $id
@@ -35,4 +37,19 @@ class User extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class, 'user_id', 'id');
+    }
+
+    public function sentTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'payer_id', 'id');
+    }
+
+    public function receivedTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'payee_id', 'id');
+    }
 }
