@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: Payment API
+  description: API para realizar pagamentos
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:9501
+
+paths:
+  /auth/sign-up:
+    post:
+      summary: Registra um novo usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request/SignUpRequest'
+      responses:
+        201:
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource/UserResource'
+
+  /auth/sign-in:
+    post:
+      summary: Logue em sua conta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request/SignInRequest'
+      responses:
+        200:
+          description: Logado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource/UserResource'
+
+  /transactions/transfer:
+    post:
+      summary: Realiza uma transferência
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Request/TransferRequest'
+      responses:
+        200:
+          description: Transfer successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource/TransactionResource'
+        403:
+          description: Saldo insuficiente / Usuário Lojista (shopkeeper)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                    example: 403
+                  message:
+                    type: string
+                    example: Saldo insuficiente
+
+components:
+  schemas:
+    Request:
+      SignUpRequest:
+        type: object
+        properties:
+          firstName:
+            required: true
+            type: string
+            description: The first name of the user
+          lastName:
+            required: true
+            type: string
+            description: The last name of the user
+          email:
+            required: true
+            type: string
+            description: The email address of the user
+          document:
+            required: true
+            type: string
+            description: The document of the user
+          password:
+            required: true
+            type: string
+            description: The password of the user
+
+      SignInRequest:
+        type: object
+        properties:
+          email:
+            required: true
+            type: string
+            description: The email address of the user
+          password:
+            required: true
+            type: string
+            description: The password of the user
+
+      TransferRequest:
+        type: object
+        properties:
+          value:
+            required: true
+            type: number
+            description: The amount of the transfer
+          payer:
+            required: true
+            type: number
+            description: The ID of the payer user
+          payee:
+            required: true
+            type: number
+            description: The ID of the payee user
+
+    Resource:
+      UserResource:
+        type: object
+        properties:
+          id:
+            type: number
+            description: The ID of the user
+          firstName:
+            type: string
+            description: The first name of the user
+          lastName:
+            type: string
+            description: The last name of the user
+          email:
+            type: string
+            description: The email address of the user
+          wallet:
+            $ref: '#/components/schemas/Resource/WalletResource'
+
+      WalletResource:
+        type: object
+        properties:
+          balance:
+            type: number
+            description: The balance of the user's wallet
+
+      TransactionResource:
+        type: object
+        properties:
+          amount:
+            type: number
+            description: The amount of the transaction
+          payerUserId:
+            type: number
+            description: The ID of the payer user
+          payeeUserId:
+            type: number
+            description: The ID of the payee user
