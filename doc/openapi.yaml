@@ -16,14 +16,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Request/SignUpRequest'
+              $ref: '#/components/schemas/SignUpRequest'
       responses:
         201:
           description: Usuário criado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource/UserResource'
+                $ref: '#/components/schemas/UserResource'
 
   /auth/sign-in:
     post:
@@ -33,14 +33,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Request/SignInRequest'
+              $ref: '#/components/schemas/SignInRequest'
       responses:
         200:
           description: Logado com sucesso
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource/UserResource'
+                $ref: '#/components/schemas/UserResource'
 
   /transactions/transfer:
     post:
@@ -50,14 +50,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Request/TransferRequest'
+              $ref: '#/components/schemas/TransferRequest'
       responses:
         200:
           description: Transfer successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Resource/TransactionResource'
+                $ref: '#/components/schemas/TransactionResource'
         403:
           description: Saldo insuficiente / Usuário Lojista (shopkeeper)
           content:
@@ -74,94 +74,92 @@ paths:
 
 components:
   schemas:
-    Request:
-      SignUpRequest:
-        type: object
-        properties:
-          firstName:
-            required: true
-            type: string
-            description: The first name of the user
-          lastName:
-            required: true
-            type: string
-            description: The last name of the user
-          email:
-            required: true
-            type: string
-            description: The email address of the user
-          document:
-            required: true
-            type: string
-            description: The document of the user
-          password:
-            required: true
-            type: string
-            description: The password of the user
+    SignUpRequest:
+      type: object
+      properties:
+        firstName:
+          required: true
+          type: string
+          description: The first name of the user
+        lastName:
+          required: true
+          type: string
+          description: The last name of the user
+        email:
+          required: true
+          type: string
+          description: The email address of the user
+        document:
+          required: true
+          type: string
+          description: The document of the user
+        password:
+          required: true
+          type: string
+          description: The password of the user
 
-      SignInRequest:
-        type: object
-        properties:
-          email:
-            required: true
-            type: string
-            description: The email address of the user
-          password:
-            required: true
-            type: string
-            description: The password of the user
+    SignInRequest:
+      type: object
+      properties:
+        email:
+          required: true
+          type: string
+          description: The email address of the user
+        password:
+          required: true
+          type: string
+          description: The password of the user
 
-      TransferRequest:
-        type: object
-        properties:
-          value:
-            required: true
-            type: number
-            description: The amount of the transfer
-          payer:
-            required: true
-            type: number
-            description: The ID of the payer user
-          payee:
-            required: true
-            type: number
-            description: The ID of the payee user
+    TransferRequest:
+      type: object
+      properties:
+        value:
+          required: true
+          type: number
+          description: The amount of the transfer
+        payer:
+          required: true
+          type: number
+          description: The ID of the payer user
+        payee:
+          required: true
+          type: number
+          description: The ID of the payee user
 
-    Resource:
-      UserResource:
-        type: object
-        properties:
-          id:
-            type: number
-            description: The ID of the user
-          firstName:
-            type: string
-            description: The first name of the user
-          lastName:
-            type: string
-            description: The last name of the user
-          email:
-            type: string
-            description: The email address of the user
-          wallet:
-            $ref: '#/components/schemas/Resource/WalletResource'
+    UserResource:
+      type: object
+      properties:
+        id:
+          type: number
+          description: The ID of the user
+        firstName:
+          type: string
+          description: The first name of the user
+        lastName:
+          type: string
+          description: The last name of the user
+        email:
+          type: string
+          description: The email address of the user
+        wallet:
+          $ref: '#/components/schemas/WalletResource'
 
-      WalletResource:
-        type: object
-        properties:
-          balance:
-            type: number
-            description: The balance of the user's wallet
+    WalletResource:
+      type: object
+      properties:
+        balance:
+          type: number
+          description: The balance of the user's wallet
 
-      TransactionResource:
-        type: object
-        properties:
-          amount:
-            type: number
-            description: The amount of the transaction
-          payerUserId:
-            type: number
-            description: The ID of the payer user
-          payeeUserId:
-            type: number
-            description: The ID of the payee user
+    TransactionResource:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: The amount of the transaction
+        payerUserId:
+          type: number
+          description: The ID of the payer user
+        payeeUserId:
+          type: number
+          description: The ID of the payee user
