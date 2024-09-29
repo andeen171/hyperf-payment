@@ -8,4 +8,5 @@ enum ExceptionMessageCodeEnum: string
     case WRONG_CREDENTIALS = 'wrong_credentials';
     case UNAUTHORIZED = 'unauthorized';
     case INSUFFICIENT_FUNDS = 'insufficient_funds';
+    case TRANSACTION_FAILED = 'transaction_failed';
 }
