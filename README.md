@@ -39,4 +39,7 @@ composer test
 
 You can then reach the api at `http://localhost:9501/`
 
-<iframe src="https://petstore.swagger.io/?url=https://raw.githubusercontent.com/andeen171/hyperf-payment/refs/heads/master/doc/openapi.yaml" width="100%" height="500"></iframe>
+### Docs
+
+You can access the swagger
+docs [by clicking here](https://andeen171.github.io/hyperf-payment/)
