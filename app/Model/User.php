@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Model;
 
 use Carbon\Carbon;
+use Hyperf\Database\Model\Collection;
+use Hyperf\Database\Model\Events\Created;
 use Hyperf\Database\Model\Relations\HasMany;
 use Hyperf\Database\Model\Relations\HasOne;
 
@@ -18,6 +20,9 @@ use Hyperf\Database\Model\Relations\HasOne;
  * @property string $type
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read Wallet $wallet
+ * @property-read Collection<Transaction> $sentTransactions
+ * @property-read Collection<Transaction> $receivedTransactions
  */
 class User extends Model
 {
@@ -37,6 +42,11 @@ class User extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime'
     ];
+
+    public function created(Created $event): void
+    {
+        $this->wallet()->create();
+    }
 
     public function wallet(): HasOne
     {

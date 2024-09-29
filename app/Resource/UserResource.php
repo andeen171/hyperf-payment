@@ -10,11 +10,6 @@ use Hyperf\Resource\Json\JsonResource;
  */
 class UserResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -24,6 +19,7 @@ class UserResource extends JsonResource
             'lastName' => $this->last_name,
             'email' => $this->email,
             'document' => $this->document,
+            'wallet' => WalletResource::make($this->whenLoaded('wallet')),
             'createdAt' => $this->created_at,
         ];
     }

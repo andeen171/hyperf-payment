@@ -14,6 +14,7 @@ use Hyperf\DbConnection\Model\Model;
  * @property int $user_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read User $user
  */
 class Wallet extends Model
 {

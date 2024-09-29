@@ -33,9 +33,4 @@ class AuthController
 
         return $response->json(['token' => $jwt]);
     }
-
-    public function user(): PsrResponseInterface
-    {
-        return UserResource::make($this->authService->getLoggedUser())->toResponse();
-    }
 }
