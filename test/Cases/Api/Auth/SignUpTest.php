@@ -10,14 +10,14 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace HyperfTest\Cases\Auth;
+namespace HyperfTest\Cases\Api\Auth;
 
 
 use App\Enum\UserTypeEnum;
 use Faker;
-use Hyperf\Testing\TestCase;
+use HyperfTest\HttpTestCase;
 
-class SignUpTest extends TestCase
+class SignUpTest extends HttpTestCase
 {
     protected const ROUTE = '/auth/sign-up';
     protected const SIGN_IN_ROUTE = '/auth/sign-in';
@@ -51,6 +51,9 @@ class SignUpTest extends TestCase
                 'lastName',
                 'document',
                 'email',
+                'wallet' => [
+                    'balance'
+                ]
             ]
         ]);
 
