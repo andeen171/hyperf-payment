@@ -6,12 +6,12 @@ use App\Enum\ExceptionMessageCodeEnum;
 use App\Exception\AbstractException;
 use Swoole\Http\Status;
 
-class WrongCredentialsException extends AbstractException
+class InvalidCredentialsException extends AbstractException
 {
     public function __construct()
     {
         $code = Status::UNAUTHORIZED;
-        $message = ExceptionMessageCodeEnum::WRONG_CREDENTIALS;
+        $message = ExceptionMessageCodeEnum::INVALID_CREDENTIALS;
         parent::__construct($message, $code);
     }
 }

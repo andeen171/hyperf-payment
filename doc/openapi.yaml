@@ -24,6 +24,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResource'
+        422:
+          description: Erro de validação
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                    example: "Erro de validação"
 
   /auth/sign-in:
     post:
@@ -36,15 +48,33 @@ paths:
               $ref: '#/components/schemas/SignInRequest'
       responses:
         200:
-          description: Logado com sucesso
+          description: Logado com sucesso, Token gerado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserResource'
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: O token JWT de autenticação
+        401:
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: number
+                  message:
+                    type: string
+                    example: "Credenciais inválidas"
 
   /transactions/transfer:
     post:
       summary: Realiza uma transferência
+      security:
+        - bearerAuth: [ ]
       requestBody:
         required: true
         content:
@@ -67,36 +97,49 @@ paths:
                 properties:
                   code:
                     type: number
-                    example: 403
                   message:
                     type: string
-                    example: Saldo insuficiente
+                    example: "Saldo insuficiente"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     SignUpRequest:
       type: object
       properties:
+        type:
+          type: string
+          enum: [ common, shopkeeper ]
+          default: common
+          description: O tipo do usuário lojista/comum
         firstName:
           required: true
           type: string
-          description: The first name of the user
+          description: O primeiro nome do usuário
         lastName:
           required: true
           type: string
-          description: The last name of the user
+          description: O sobrenome do usuário
         email:
           required: true
           type: string
-          description: The email address of the user
+          description: O email do usuário
         document:
           required: true
           type: string
-          description: The document of the user
+          description: O CPF/CPNJ do usuário
         password:
           required: true
           type: string
-          description: The password of the user
+          description: A senha do usuário
+        passwordConfirmation:
+          required: true
+          type: string
+          description: A confirmação da senha
 
     SignInRequest:
       type: object
@@ -104,11 +147,11 @@ components:
         email:
           required: true
           type: string
-          description: The email address of the user
+          description: O email do usuário
         password:
           required: true
           type: string
-          description: The password of the user
+          description: A senha do usuário
 
     TransferRequest:
       type: object
@@ -116,31 +159,36 @@ components:
         value:
           required: true
           type: number
-          description: The amount of the transfer
+          description: A quantia a ser transferida
         payer:
           required: true
           type: number
-          description: The ID of the payer user
+          description: O Id do usuário que irá pagar
         payee:
           required: true
           type: number
-          description: The ID of the payee user
+          description: O Id do usuário que irá receber
 
     UserResource:
       type: object
       properties:
         id:
           type: number
-          description: The ID of the user
+          description: O Id do usuário
+        type:
+          type: string
+          enum: [ common, shopkeeper ]
+          description: O tipo do usuário lojista/comum
         firstName:
           type: string
-          description: The first name of the user
+          description: O primeiro nome do usuário
         lastName:
           type: string
-          description: The last name of the user
+          description: O sobrenome do usuário
         email:
           type: string
-          description: The email address of the user
+          format: email
+          description: O email do usuário
         wallet:
           $ref: '#/components/schemas/WalletResource'
 
@@ -149,17 +197,17 @@ components:
       properties:
         balance:
           type: number
-          description: The balance of the user's wallet
+          description: O saldo da carteira
 
     TransactionResource:
       type: object
       properties:
         amount:
           type: number
-          description: The amount of the transaction
+          description: A quantia da transação
         payerUserId:
           type: number
-          description: The ID of the payer user
+          description: O Id do usuário que pagou
         payeeUserId:
           type: number
-          description: The ID of the payee user
+          description: O Id do usuário que recebeu

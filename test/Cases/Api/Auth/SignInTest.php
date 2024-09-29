@@ -79,7 +79,7 @@ class SignInTest extends HttpTestCase
         $response = $this->post(self::ROUTE, $data);
         $response->assertUnauthorized()->assertJson([
             'code' => Status::UNAUTHORIZED,
-            'message' => ExceptionMessageCodeEnum::WRONG_CREDENTIALS->value,
+            'message' => ExceptionMessageCodeEnum::INVALID_CREDENTIALS->value,
         ]);
     }
 }

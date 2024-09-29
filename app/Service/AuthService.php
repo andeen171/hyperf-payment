@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
+use App\Exception\Auth\InvalidCredentialsException;
 use App\Exception\Auth\UnauthorizedException;
 use App\Exception\Auth\UserNotFoundException;
-use App\Exception\Auth\WrongCredentialsException;
 use App\Model\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -37,7 +37,7 @@ class AuthService
     public function signIn(?User $user, array $data): string
     {
         if (!$user || !password_verify($data['password'], $user->password)) {
-            throw new WrongCredentialsException();
+            throw new InvalidCredentialsException();
         }
 
         return $this->issueToken($user);
