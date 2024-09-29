@@ -31,6 +31,7 @@ services:
       MYSQL_DATABASE: payment
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
 
 volumes:
