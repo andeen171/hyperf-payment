@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace HyperfTest\Cases\Auth;
+namespace HyperfTest\Cases\Api\Auth;
 
 
 use App\Enum\UserTypeEnum;

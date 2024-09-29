@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license  https://github.com/hyperf/hyperf/blob/master/LICENSE
  */
 
-namespace HyperfTest\Cases\Users;
+namespace HyperfTest\Cases\Api\Users;
 
 
 use App\Enum\UserTypeEnum;
@@ -32,7 +32,8 @@ class ListUsersTest extends HttpTestCase
         $this->users = factory(User::class, 5)->create(['type' => UserTypeEnum::COMMON->value]);
         $this->shopkeeper = factory(User::class)->create(['type' => UserTypeEnum::SHOPKEEPER->value]);
 
-        $this->setAuthenticationToken();
+        $token = $this->tokenBuilder->forUser($this->users->first())->get();
+        $this->setAuthenticationToken($token);
     }
 
     public function testListUsers()

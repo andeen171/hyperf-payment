@@ -16,9 +16,9 @@ use App\Middleware\AuthMiddleware;
 use App\Service\AuthService;
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Context\Context;
+use Hyperf\Contract\ContainerInterface;
 use Hyperf\Database\Schema\Schema;
 use Hyperf\DbConnection\Db;
-use Hyperf\Testing\Concerns\InteractsWithContainer;
 use Hyperf\Testing\Http\Client;
 use Hyperf\Testing\Http\TestResponse;
 use Mockery;
@@ -30,19 +30,23 @@ use function Hyperf\Support\make;
 
 /**
  * Class HttpTestCase.
- * @method get($uri, $data = [], $headers = [])
- * @method post($uri, $data = [], $headers = [])
- * @method put($uri, $data = [], $headers = [])
- * @method json($uri, $data = [], $headers = [])
- * @method file($uri, $data = [], $headers = [])
- * @method request($method, $path, $options = [])
+ * @method TestResponse get($uri, $data = [], $headers = [])
+ * @method TestResponse post($uri, $data = [], $headers = [])
+ * @method TestResponse put($uri, $data = [], $headers = [])
+ * @method TestResponse json($uri, $data = [], $headers = [])
+ * @method TestResponse file($uri, $data = [], $headers = [])
+ * @method TestResponse request($method, $path, $options = [])
  */
 abstract class HttpTestCase extends TestCase
 {
-    use InteractsWithContainer;
+    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     protected Client $client;
     protected TokenBuilder $tokenBuilder;
+    /**
+     * @var array<class-string>
+     */
+    protected array $mocks = [];
 
     public function __construct($name = null, array $data = [], $dataName = '')
     {
@@ -58,9 +62,9 @@ abstract class HttpTestCase extends TestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        $this->cleanUpContainer();
 
-        $this->cleanUpAuthentication();
+        $this->closeMockery();
 
         Schema::disableForeignKeyConstraints();
 
@@ -93,18 +97,33 @@ abstract class HttpTestCase extends TestCase
                 return $handler->handle($request);
             });
 
-        ApplicationContext::getContainer()->define(
-            AuthMiddleware::class,
-            fn() => $mock->getMock()->makePartial(),
-        );
+        $this->defineMockInApplicationContainer(AuthMiddleware::class, $mock->getMock());
     }
 
-    protected function cleanUpAuthentication(): void
+    /**
+     * @param class-string $className
+     * @param Mockery\MockInterface $mock
+     * @return void
+     */
+    protected function defineMockInApplicationContainer(string $className, Mockery\MockInterface $mock): void
     {
+        /** @var ContainerInterface $container */
         $container = ApplicationContext::getContainer();
 
-        $container->unbind(AuthMiddleware::class);
-        $container->define(AuthMiddleware::class, AuthMiddleware::class);
+        $container->define($className, fn() => $mock->makePartial());
+
+        $this->mocks[] = $className;
+    }
+
+    protected function cleanUpContainer(): void
+    {
+        /** @var ContainerInterface $container */
+        $container = ApplicationContext::getContainer();
+
+        foreach ($this->mocks as $className) {
+            $container->unbind($className);
+            $container->define($className, $className);
+        }
     }
 
 }
